@@ -1,4 +1,6 @@
 package dev.etino.fcshared
+import java.awt.Desktop
+import java.net.URI
 
 
 class JVMPlatform : Platform {
@@ -6,3 +8,9 @@ class JVMPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = JVMPlatform()
+
+actual fun openUrl(url: String) {
+    if (Desktop.isDesktopSupported()) {
+        Desktop.getDesktop().browse(URI(url))
+    }
+}

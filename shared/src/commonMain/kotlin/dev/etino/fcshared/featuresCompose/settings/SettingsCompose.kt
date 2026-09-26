@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.etino.fcshared.compose.AppTheme
+import dev.etino.fcshared.openUrl
 import fesb_companion_shared.shared.generated.resources.Res
 import fesb_companion_shared.shared.generated.resources.about_app
 import fesb_companion_shared.shared.generated.resources.arrow_back_24px
@@ -47,13 +48,16 @@ import fesb_companion_shared.shared.generated.resources.developer_names
 import fesb_companion_shared.shared.generated.resources.developers
 import fesb_companion_shared.shared.generated.resources.help_improve_app
 import fesb_companion_shared.shared.generated.resources.help_stabilize_app
+import fesb_companion_shared.shared.generated.resources.istra_i_projekt_ili_doprinesi_njegovom_razvoju_na_githubu
 import fesb_companion_shared.shared.generated.resources.jsoup_desc
 import fesb_companion_shared.shared.generated.resources.jsoup_title
 import fesb_companion_shared.shared.generated.resources.library_licenses
+import fesb_companion_shared.shared.generated.resources.linkNaApp
 import fesb_companion_shared.shared.generated.resources.logged_in_as
 import fesb_companion_shared.shared.generated.resources.logout
 import fesb_companion_shared.shared.generated.resources.ok_http_desc
 import fesb_companion_shared.shared.generated.resources.ok_http_title
+import fesb_companion_shared.shared.generated.resources.pogledaj_izvorni_kod
 import fesb_companion_shared.shared.generated.resources.privacy_policy_desc
 import fesb_companion_shared.shared.generated.resources.privacy_policy_title
 import fesb_companion_shared.shared.generated.resources.report_bug
@@ -158,6 +162,14 @@ fun SettingsCompose(
                     supportText = stringResource(Res.string.help_stabilize_app),
                     onClick = {
                         //router.sendEmail(viewModel.getBugReportEmailModalModel())
+                    }
+                )
+                val link = stringResource(Res.string.linkNaApp)
+                SettingsItem(
+                    title = stringResource(Res.string.pogledaj_izvorni_kod),
+                    supportText = stringResource(Res.string.istra_i_projekt_ili_doprinesi_njegovom_razvoju_na_githubu),
+                    onClick = {
+                        openUrl(link)
                     }
                 )
                 CategoryTitle(title = stringResource(Res.string.about_app))

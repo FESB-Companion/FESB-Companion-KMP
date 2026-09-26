@@ -132,6 +132,10 @@
     <string name="library_licenses">Licence korištenih biblioteka</string>
     <string name="send_mail_using">Pošalji email pomoću…</string>
 
+    <string name="pogledaj_izvorni_kod">Pogledaj izvorni kod</string>
+    <string name="istra_i_projekt_ili_doprinesi_njegovom_razvoju_na_githubu">Istraži projekt ili doprinesi njegovom razvoju na GitHubu.</string>
+    <string name="linkNaApp">https://github.com/FESB-Companion/FESB-Companion-KMP</string>
+
     // Iksica
     <string name="iksica_no_data">Nema podataka</string>
     <string name="iksica_loading">Učitavanje…</string>
