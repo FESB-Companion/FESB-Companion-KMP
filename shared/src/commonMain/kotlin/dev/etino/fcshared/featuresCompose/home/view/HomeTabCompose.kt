@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation3.runtime.NavKey
 import dev.etino.fcshared.compose.AppTheme
 import dev.etino.fcshared.featuresCompose.home.compose.CardsCompose
+import dev.etino.fcshared.featuresCompose.home.compose.GithubMessage
 import dev.etino.fcshared.featuresCompose.home.compose.NotesCompose
 import dev.etino.fcshared.featuresCompose.home.compose.TodayTimetableCompose
 import dev.etino.fcshared.featuresCompose.home.utils.getWeatherText
@@ -76,6 +77,7 @@ fun HomeTabCompose(
     val weather = homeViewModel.weatherDisplay
     val notes = homeViewModel.notes
     val events = homeViewModel.events
+    val showGithubMessage by homeViewModel.showGithubMessage.collectAsState()
     val insertNote: (note: Note) -> Unit = homeViewModel::insert
     val deleteNote: (note: Note) -> Unit = homeViewModel::delete
 
@@ -142,6 +144,11 @@ fun HomeTabCompose(
                         insertNote,
                         deleteNote
                     )
+                }
+                if (showGithubMessage) {
+                    item {
+                        GithubMessage(homeViewModel::hideGithubMessage)
+                    }
                 }
                 item {
                     TodayTimetableCompose(

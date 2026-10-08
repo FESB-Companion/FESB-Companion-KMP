@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        initializeUrlOpener(applicationContext)
 
         startKoin {
             androidContext(this@MainActivity)

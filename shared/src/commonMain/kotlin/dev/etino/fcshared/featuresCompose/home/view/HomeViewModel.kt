@@ -54,6 +54,11 @@ class HomeViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = emptyList()
         )
+    val showGithubMessage: StateFlow<Boolean> = userRepository.showGithubMessage.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false
+    )
     private val _showSnackbar = MutableSharedFlow<StringResource>()
     val showSnackbar = _showSnackbar.asSharedFlow()
 
@@ -171,6 +176,12 @@ class HomeViewModel(
                     else it.toString()
                 }
             }
+        }
+    }
+
+    fun hideGithubMessage() {
+        viewModelScope.launch(Dispatchers.Default + handler) {
+            userRepository.hideGithubMessage()
         }
     }
 }
