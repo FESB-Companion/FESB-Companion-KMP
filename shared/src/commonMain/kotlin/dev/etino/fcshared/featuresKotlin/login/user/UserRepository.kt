@@ -12,6 +12,8 @@ import dev.etino.fcshared.featuresKotlin.login.user.models.User
 import dev.etino.fcshared.featuresKotlin.login.user.models.UserRepositoryResult
 import dev.etino.fcshared.featuresKotlin.login.user.models.UserRoom
 import dev.etino.fcshared.featuresKotlin.networking.NetworkServiceResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class UserRepository(
     private val userService: UserServiceInterface,
@@ -19,6 +21,10 @@ class UserRepository(
     private val datastore: DataStore<Preferences>,
     private val appDatabase: AppDatabase,
 ) : UserRepositoryInterface {
+
+    override val showGithubMessage: Flow<Boolean> = datastore.data.map { prefs ->
+        prefs[SPKey.SHOW_GITHUB_MESSAGE.key] ?: true
+    }
 
     override suspend fun attemptLogin(username: String, password: String): UserRepositoryResult.LoginResult {
         return when (val result = userService.loginUser(username, password)) {
@@ -59,5 +65,9 @@ class UserRepository(
         appDatabase.studomatDao().deleteYears()
         appDatabase.userDao().deleteAllUserData()
         datastore.edit { it[SPKey.LOGGED_IN.key] = false }
+    }
+
+    override suspend fun hideGithubMessage() {
+        datastore.edit { it[SPKey.SHOW_GITHUB_MESSAGE.key] = false }
     }
 }
