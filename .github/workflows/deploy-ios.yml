@@ -2,6 +2,11 @@ name: Deploy iOS to App Store
 on:
   workflow_dispatch:
     inputs:
+      version_number:
+        description: 'iOS version (e.g. 1.0.1)'
+        required: true
+        default: '1.0.1'
+        type: string
       release_type:
         description: "Release type"
         required: true
