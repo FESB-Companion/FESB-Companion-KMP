@@ -45,6 +45,7 @@ jobs:
       MATCH_SSH_PRIVATE_KEY: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
       RELEASE_TYPE: ${{ inputs.release_type }}
       EXPORT_IPA: ${{ inputs.export_ipa }}
+      VERSION_NUMBER: ${{ inputs.version_number }}
 
     steps:
       - name: Set up latest Xcode
