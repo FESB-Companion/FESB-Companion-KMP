@@ -64,9 +64,11 @@ platform :ios do
     load_api_key(options)  # Authenticate with App Store Connect API using the key.
     fetch_certificates_with_match(options.merge(match_type: "appstore"))  # Pull App Store signing certs/profiles.
 
+    version_number = ENV.fetch('VERSION_NUMBER', '1.0.1')
+
     increment_version_number(
       xcodeproj: "iosApp.xcodeproj",
-      version_number: "1.0.1"
+      version_number: version_number
     )
 
     # Fetch the most recent build number uploaded to TestFlight (to avoid duplicates).
