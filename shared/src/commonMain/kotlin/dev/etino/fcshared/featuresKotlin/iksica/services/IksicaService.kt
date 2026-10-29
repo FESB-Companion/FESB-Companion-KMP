@@ -1,6 +1,7 @@
 package dev.etino.fcshared.featuresKotlin.iksica.services
 
 import com.fleeksoft.ksoup.Ksoup
+import dev.etino.fcshared.featuresKotlin.networking.CustomCookieStorage
 import dev.etino.fcshared.featuresKotlin.networking.NetworkServiceResult
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -9,13 +10,17 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 
-class IksicaService(private val client: HttpClient) : IksicaServiceInterface {
+class IksicaService(
+    private val client: HttpClient,
+    private val cookieStorage: CustomCookieStorage
+) : IksicaServiceInterface {
 
     override suspend fun getStudentInfo(): NetworkServiceResult.IksicaResult {
         val response: HttpResponse = client.get("https://issp.srce.hr/student")
         val success = response.status.value in 200..299
         val body = response.bodyAsText()
 
+        checkIfLoggedIn(body, "Failure getStudentInfo: Not logged in")?.let { return it }
         if (!success) {
             return NetworkServiceResult.IksicaResult.Failure(Throwable("Failure getAspNetSessionSAML"))
         }
@@ -39,12 +44,7 @@ class IksicaService(private val client: HttpClient) : IksicaServiceInterface {
             return NetworkServiceResult.IksicaResult.Failure(Throwable("Failure getRacuni: nema računa u zadnjih 30 dana"))
         }
 
-        if (doc.selectFirst("h2")?.text()
-                ?.contains("Odaberi nacin prijave u sustav") == true
-        ) {
-            return NetworkServiceResult.IksicaResult.Failure(Throwable("Failure getRacuni: Not logged in"))
-        }
-
+        checkIfLoggedIn(body, "Failure getRacuni: Not logged in")?.let { return it }
         if (!success) {
             return NetworkServiceResult.IksicaResult.Failure(Throwable("Failure getRacuni"))
         }
@@ -56,20 +56,26 @@ class IksicaService(private val client: HttpClient) : IksicaServiceInterface {
         val response: HttpResponse = client.get("https://issp.srce.hr$url")
         val success = response.status.value in 200..299
         val body = response.bodyAsText()
-        val doc = Ksoup.parse(body)
 
-        if (doc.selectFirst("h2")?.text()
-                ?.contains("Odaberi nacin prijave u sustav") == true
-        ) {
-            return NetworkServiceResult.IksicaResult.Failure(Throwable("Failure getRacun: Not logged in"))
-        }
-
+        checkIfLoggedIn(body, "Failure getRacun: Not logged in")?.let { return it }
         if (!success) {
             return NetworkServiceResult.IksicaResult.Failure(Throwable("Failure getRacun"))
         }
 
         return NetworkServiceResult.IksicaResult.Success(body)
     }
+
+    private suspend fun checkIfLoggedIn(body: String, failureMessage: String): NetworkServiceResult.IksicaResult? {
+        if (Ksoup.parse(body).selectFirst("h2")?.text()
+                ?.contains("Odaberi nacin prijave u sustav") == true
+        ) {
+            clearSession()
+            return NetworkServiceResult.IksicaResult.Failure(Throwable(failureMessage))
+        }
+        return null
+    }
+
+    private suspend fun clearSession() = cookieStorage.clearISSPCookie()
 
     companion object {
         private val SCHEME = URLProtocol.HTTPS

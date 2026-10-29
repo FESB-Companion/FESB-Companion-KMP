@@ -29,7 +29,7 @@ val iksicaModule = module {
     single<ISSPLoginInterceptor> { ISSPLoginInterceptor(get(), get()) }
     single<IksicaLoginServiceInterface> { IksicaLoginService(get(), null, "", "") }
     single<HttpClient>(named(KoinNames.ISSPPORTALCLIENT)) { provideISSPPortalClient(get(), get(), get()) }
-    single<IksicaServiceInterface> { IksicaService(get(named(KoinNames.ISSPPORTALCLIENT))) }
+    single<IksicaServiceInterface> { IksicaService(get(named(KoinNames.ISSPPORTALCLIENT)), get()) }
     single<IksicaRepositoryInterface> { IksicaRepository(get(), get()) }
     single<IksicaDao> { getIksicaDao(get()) }
     viewModel { IksicaViewModel(get(), get()) }
