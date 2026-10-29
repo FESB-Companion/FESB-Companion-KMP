@@ -38,7 +38,8 @@ class CustomCookieStorage : CookiesStorage {
                 }
                 cookie.copy(
                     maxAge = (expirationTime / 1000).toInt(),
-                    expires = GMTDate(Clock.System.now().toEpochMilliseconds() + expirationTime)
+                    expires = GMTDate(Clock.System.now().toEpochMilliseconds() + expirationTime),
+                    secure = false
                 )
             }
         defaultStorage.addCookie(requestUrl, moddedCookie)

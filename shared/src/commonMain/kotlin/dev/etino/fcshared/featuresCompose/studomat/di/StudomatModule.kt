@@ -41,6 +41,7 @@ fun provideISVUPortalClient(
         expectSuccess = false
         install(HttpRedirect) {
             checkHttpMethod = false
+            allowHttpsDowngrade = true
         }
         install(HttpCookies) {
             storage = cookieStorage

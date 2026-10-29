@@ -41,7 +41,7 @@ sealed class NetworkServiceResult {
     }
 
     sealed class StudomatResult : NetworkServiceResult() {
-        data class Success(val data: String) : StudomatResult()
+        data class Success(val data: String, val redirectedUrl: String? = null) : StudomatResult()
         class Failure(val throwable: Throwable) : StudomatResult()
     }
 

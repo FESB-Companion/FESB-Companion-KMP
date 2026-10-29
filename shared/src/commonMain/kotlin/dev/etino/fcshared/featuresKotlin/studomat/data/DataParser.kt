@@ -4,6 +4,7 @@ import com.fleeksoft.ksoup.Ksoup
 import dev.etino.fcshared.featuresKotlin.studomat.models.Student
 import dev.etino.fcshared.featuresKotlin.studomat.models.StudomatSubject
 import dev.etino.fcshared.featuresKotlin.studomat.models.StudomatYearInfo
+import io.ktor.http.Url
 
 fun parseYears(body: String): List<StudomatYearInfo> {
     val data = Ksoup.parse(body)
@@ -70,4 +71,21 @@ fun parseCurrentYear(body: String, yearInfo: StudomatYearInfo): Pair<StudomatYea
         )
     }
     return Pair(yearInfo, list)
+}
+
+fun parseSingleYear(body: String, url: String): StudomatYearInfo {
+    val data = Ksoup.parse(body)
+    val table = data.select(".card-block .table.table-bordered tbody tr")
+    val academicYearText = data.selectFirst("#pozdravnaPoruka")?.text()?.substringAfter("godinu ")
+        ?: data.title().substringAfter("godinu ")
+
+    val endpoint = if (url.startsWith("http")) Url(url).encodedPath else url
+    val yearId = endpoint.substringAfterLast("/")
+
+    return StudomatYearInfo().apply {
+        id = yearId
+        studyProgram = table.select("td:contains(Upisani studij(i)) + td").text()
+        academicYear = academicYearText
+        href = endpoint
+    }
 }
