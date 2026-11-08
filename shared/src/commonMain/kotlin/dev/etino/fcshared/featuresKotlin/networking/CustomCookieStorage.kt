@@ -30,7 +30,7 @@ class CustomCookieStorage : CookiesStorage {
 
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
         val moddedCookie =
-            if (!(cookie.name == authCookieISSP || cookie.name == authCookieISVU)) {
+            if (!(cookie.name.contains(authCookieISSP) || cookie.name == authCookieISVU)) {
                 cookie
             } else {
                 if (requestUrl.fullPath == "/studomat/login/saml2/sso/isvu" && cookie.name == authCookieISVU) {
@@ -38,7 +38,8 @@ class CustomCookieStorage : CookiesStorage {
                 }
                 cookie.copy(
                     maxAge = (expirationTime / 1000).toInt(),
-                    expires = GMTDate(Clock.System.now().toEpochMilliseconds() + expirationTime)
+                    expires = GMTDate(Clock.System.now().toEpochMilliseconds() + expirationTime),
+                    secure = true
                 )
             }
         defaultStorage.addCookie(requestUrl, moddedCookie)
@@ -71,20 +72,36 @@ class CustomCookieStorage : CookiesStorage {
         val cookies = get(StudomatService.targetUrl)
         val authCookies = cookies.filter { it.name == authCookieISVU }
         studomatLoggedIn.value = 0
-        defaultStorage.addCookie(
-            StudomatService.targetUrl,
-            authCookies.first().copy(
-                value = "",
-                expires = GMTDate(0)
+        authCookies.forEach { cookie ->
+            defaultStorage.addCookie(
+                StudomatService.targetUrl,
+                cookie.copy(
+                    value = "",
+                    expires = GMTDate(0)
+                )
             )
-        )
+        }
     }
 
     suspend fun isISSPTokenValid(): Boolean {
         val cookies = get(IksicaService.targetUrl)
-        val authCookies = cookies.filter { it.name == authCookieISSP }
+        val authCookies = cookies.filter { it.name.contains(authCookieISSP) }
 
         return authCookies.isNotEmpty()
+    }
+
+    suspend fun clearISSPCookie() {
+        val cookies = get(IksicaService.targetUrl)
+        val authCookies = cookies.filter { it.name.contains(authCookieISSP) }
+        authCookies.forEach { cookie ->
+            defaultStorage.addCookie(
+                IksicaService.targetUrl,
+                cookie.copy(
+                    value = "",
+                    expires = GMTDate(0)
+                )
+            )
+        }
     }
 
     suspend fun getISVUCookieForWebView(): Cookie? {

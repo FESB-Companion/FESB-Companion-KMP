@@ -3,6 +3,7 @@ package dev.etino.fcshared.featuresKotlin.studomat.repository
 import dev.etino.fcshared.featuresKotlin.networking.NetworkServiceResult
 import dev.etino.fcshared.featuresKotlin.studomat.dao.StudomatDao
 import dev.etino.fcshared.featuresKotlin.studomat.data.parseCurrentYear
+import dev.etino.fcshared.featuresKotlin.studomat.data.parseSingleYear
 import dev.etino.fcshared.featuresKotlin.studomat.data.parseStudent
 import dev.etino.fcshared.featuresKotlin.studomat.data.parseYears
 import dev.etino.fcshared.featuresKotlin.studomat.data.sortedByNameAndSemester
@@ -21,6 +22,11 @@ class StudomatRepository(
 
         return when (val result = studomatService.getYearNames()) {
             is NetworkServiceResult.StudomatResult.Success -> {
+                if (result.redirectedUrl != null) {
+                    val parsedYear = parseSingleYear(result.data, result.redirectedUrl)
+                    //Log.d("StudomatRepository", "getJednuGodinu: $parsedYear")
+                    return StudomatRepositoryResult.StudentAndYearsResult.Success(listOf(parsedYear), student)
+                }
                 val resultGetYears = parseYears(result.data)
                 //Log.d("StudomatRepository", "getYears: $resultGetYears")
                 StudomatRepositoryResult.StudentAndYearsResult.Success(resultGetYears, student)

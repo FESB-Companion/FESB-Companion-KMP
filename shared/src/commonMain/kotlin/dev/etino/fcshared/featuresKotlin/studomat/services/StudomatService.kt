@@ -7,6 +7,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 
@@ -32,12 +33,17 @@ class StudomatService(private val client: HttpClient, private val cookieStorage:
         val response: HttpResponse = client.get("https://www.isvu.hr/studomat/hr/studiranje/upisanegodine")
         val success = response.status.value in 200..299
         val body = response.bodyAsText()
+        val finalUrl = response.request.url.toString()
+        val isUpisEndpoint = finalUrl.contains("/upisanegodine/upis/")
 
         checkIfLoggedIn(body)
 
         return if (success && body.isNotEmpty()) {
             //Log.d("StudomatService", "getUpisaneGodine: ${body.substring(0, 100)}")
-            NetworkServiceResult.StudomatResult.Success(body)
+            NetworkServiceResult.StudomatResult.Success(
+                data = body,
+                redirectedUrl = finalUrl.takeIf { isUpisEndpoint }
+            )
         } else {
             //Log.d("StudomatService", "getUpisaneGodine: Couldn't get upisane godine data!")
             NetworkServiceResult.StudomatResult.Failure(Throwable("Couldn't get upisane godine data!"))
