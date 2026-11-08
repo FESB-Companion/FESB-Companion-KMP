@@ -17,6 +17,7 @@ import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.plugin
+import io.ktor.http.URLProtocol
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -51,6 +52,12 @@ fun provideISVUPortalClient(
         }
     }
     client.plugin(HttpSend).intercept { request ->
+        if (request.url.protocol == URLProtocol.HTTP &&
+            request.url.host == StudomatService.targetUrl.host
+        ) {
+            request.url.protocol = URLProtocol.HTTPS
+            request.url.port = 443
+        }
 
         if (!cookieStorage.isISVUTokenValid()) {
             isvuLoginInterceptor.refreshSession()
